@@ -51,8 +51,9 @@ Run what the change touches, and don't commit if it fails: `pnpm --filter <pkg> 
 ### Pull requests
 
 - Small and focused: aim for under about 400 changed lines, one topic.
-- Title follows Conventional Commits. Description covers what changed, why, how to test, and screenshots for UI changes.
-- Link the phase or decision (for example `docs/decisions.md`) when relevant.
+- Title follows Conventional Commits.
+- Description format is fixed and concise: four short lines of prose (what the PR does and why, then the checks that pass), a blank line, then one bullet per change. No headings such as What/Why/How to test.
+- Mention the phase or decision (for example `docs/decisions.md`) in the prose when relevant.
 - Add the PR description without attribution lines (see above).
 - Update `docs/decisions.md` in the same PR when a significant decision changes.
 

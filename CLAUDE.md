@@ -12,12 +12,61 @@ The user's main goal is to brush up on React 19 and modern JS. The frontend is t
 - Be concise and decision-oriented: a recommendation with trade-offs, not a menu.
 - Ask before generating large amounts of code. Small, targeted snippets are fine when asked for.
 
-## Git
+## Git workflow
 
-- Make atomic commits, one logical change each.
-- **Do NOT add a `Co-Authored-By` tag (or any attribution line) to commit messages or PR descriptions.**
-- Only commit when asked.
-- Main branch is `main`.
+**Before every commit, branch, merge or PR, re-read this section and follow it exactly.** Treat every change as if it will be reviewed commit by commit.
+
+### Branches
+
+- `main`: production. Deployed (Vercel, API host). Receives merges only from `develop` (release) or `hotfix/*`. Tagged with semver (`v0.1.0`).
+- `develop`: default and integration branch. All feature work branches from it and merges back into it. PRs target `develop`, never `main`, unless it is a release or hotfix.
+- Short-lived topic branches from `develop`, named `<type>/<phase>-<topic>` in lowercase-hyphen form:
+  - types: `feat`, `fix`, `chore`, `docs`, `refactor`, `test`, `build`, `hotfix`
+  - examples: `feat/p1-chat-streaming`, `chore/p0-eslint-boundaries`, `fix/p1-thread-delete`
+- One topic per branch. Keep branches to a day or two, and rebase on `develop` to stay current.
+- Delete a branch after it merges.
+- `hotfix/*` branches from `main`, merges into `main`, then back into `develop`.
+
+### Commits
+
+- **Atomic:** one logical change per commit. It builds, lints and typechecks on its own, and it can be reverted on its own. Don't mix refactors, formatting and features in one commit. Stage with `git add -p` or by path, never `git add .` blindly.
+- **Conventional Commits:** `<type>(<scope>): <subject>`
+  - types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
+  - scopes: `web`, `api`, `contract`, `docs`, `deps`, or a feature name such as `chat`
+  - subject: imperative mood ("add", not "added"), lowercase, no trailing period, 72 characters or fewer
+  - body (when the why isn't obvious): blank line after the subject, wrapped at 72, explains why and not what
+  - breaking changes: `!` after the type/scope and a `BREAKING CHANGE:` footer
+- **Dependencies:** a dependency change and the lockfile it produces go in the same commit, separate from code that uses it.
+- **No attribution:** do NOT add a `Co-Authored-By` tag (or any attribution line, such as "Generated with Claude Code") to commit messages or PR descriptions.
+- **Only commit when asked.** Show what will be committed (`git status`, `git diff --staged`) before committing.
+- **Never commit:** secrets, `.env*` files, API keys, `node_modules`, build output, local scratch files.
+- **Never use** `--no-verify`, and never bypass hooks or signing. Fix the cause instead.
+- **No WIP commits** on shared branches. Tidy local history (`git rebase -i`) before opening a PR; this only applies to unpushed commits.
+- **Never rewrite pushed history** on `main` or `develop`. Force-push only to your own topic branch, using `--force-with-lease`.
+
+### Before committing
+
+Run what the change touches, and don't commit if it fails: `pnpm --filter <pkg> lint`, typecheck, and build. Documentation-only changes are exempt.
+
+### Pull requests
+
+- Small and focused: aim for under about 400 changed lines, one topic.
+- Title follows Conventional Commits. Description covers what changed, why, how to test, and screenshots for UI changes.
+- Link the phase or decision (for example `docs/decisions.md`) when relevant.
+- Add the PR description without attribution lines (see above).
+- Update `docs/decisions.md` in the same PR when a significant decision changes.
+
+### Merging
+
+- Topic branch into `develop`: rebase and merge (keeps atomic commits). Do not squash.
+- `develop` into `main`: merge commit, then tag the release.
+- `main` requires a PR and passing checks; no direct pushes. Required checks (lint, typecheck, build) come in Phase 5.
+- Deploys: production deploys from `main`; Vercel previews come from PR branches.
+
+### Releases and hotfixes
+
+- Semver tags on `main`: `v<major>.<minor>.<patch>`. Pre-1.0, bump minor for features and patch for fixes.
+- After a hotfix lands on `main`, merge `main` back into `develop` right away.
 
 ## Stack
 
@@ -74,7 +123,7 @@ Security: the Anthropic key stays server-side. Every row carries `user_id`, and 
 
 ## Current progress
 
-Done: root workspace, `.gitignore`, `packages/contract` scaffold (empty domain files, zod installed), placeholder README and docs, first commits on `main`.
+Done: root workspace, `.gitignore`, `packages/contract` scaffold (empty domain files, zod installed), placeholder README and docs, `apps/web` scaffold, Tailwind packages installed, TypeScript pinned to 6.0 (see `docs/decisions.md`). Work happens on `develop`.
 
 Next (Phase 0):
 1. Scaffold `apps/web` with the Vite React TS template (package name `web`).

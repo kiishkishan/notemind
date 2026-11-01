@@ -18,3 +18,11 @@
 - **Commits:** Conventional Commits, atomic, no attribution trailers. Full rules live in `CLAUDE.md`.
 - **Trade-off:** Git Flow is more overhead than trunk-based development for a solo project. Accepted because the deployed `main` needs protecting and the habit is worth practicing.
 - **Revisit when:** the two-branch overhead outweighs the protection, for example if `develop` and `main` never diverge in practice.
+
+## UI components: shadcn/ui on Base UI (not Radix)
+
+- **Decision:** shadcn/ui with the `base` component library (Base UI, `@base-ui/react`), preset Nova (Lucide icons, Geist font), neutral base color. Components live in `apps/web/src/components/ui`.
+- **Why:** Base UI ships Combobox, Autocomplete and Number Field natively; Radix does not. Those are likely needed for thread/document pickers and model settings.
+- **Trade-offs:** fewer community examples than Radix, and some API differences (for example a `render` prop instead of `asChild`), so Radix snippets may not copy over. Components are copied into the repo, so they can be adjusted later.
+- **Lint:** `react-refresh/only-export-components` is off for `src/components/ui/**` only, because shadcn files export variants (for example `buttonVariants`) alongside the component. It stays on for hand-written code.
+- **Revisit when:** a needed component is missing or awkward in Base UI.
